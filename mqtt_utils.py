@@ -74,5 +74,5 @@ class EUREC4AMqttPublisher(object):
         if self.deduplicator is not None:
             if not self.deduplicator.is_new(topic, data):
                 return
-            self.client.publish(topic, json.dumps(data, default=json_default))
+            self.client.publish(topic, json.dumps(data, default=json_default), retain=retain)
             print(topic, data)
