@@ -2,3 +2,4 @@ paho-mqtt
 requests
 dateutils
 numpy
+pynmea2
