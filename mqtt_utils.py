@@ -42,19 +42,23 @@ class MQTTDeduplicator(object):
             return True
         return False
 
+def get_mqtt_client(username=None, password=None):
+    import paho.mqtt.client as mqtt
+    import os
+    client = mqtt.Client()
+    client.tls_set(ca_certs=os.path.join(os.path.dirname(__file__), "trustid-x3-root.pem.txt"))
+    if username is None and password is None:
+        config_dir = get_config_dir()
+        with open(os.path.join(config_dir, "mqtt_import.json")) as configfile:
+            config = json.load(configfile)
+        username = config["username"]
+        password = config["password"]
+    client.username_pw_set(username, password)
+    return client
+
 class EUREC4AMqttPublisher(object):
     def __init__(self, username=None, password=None, deduplicate=True):
-        import paho.mqtt.client as mqtt
-        import os
-        self.client = mqtt.Client()
-        self.client.tls_set(ca_certs=os.path.join(os.path.dirname(__file__), "trustid-x3-root.pem.txt"))
-        if username is None and password is None:
-            config_dir = get_config_dir()
-            with open(os.path.join(config_dir, "mqtt_import.json")) as configfile:
-                config = json.load(configfile)
-            username = config["username"]
-            password = config["password"]
-        self.client.username_pw_set(username, password)
+        self.client = get_mqtt_client(username, password)
         self._is_connected = False
         if deduplicate:
             self.deduplicator = MQTTDeduplicator()
