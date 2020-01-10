@@ -7,11 +7,13 @@ from io import StringIO
 EXPORT_IDS = [
     {
         "platform_id": "SV3-245",
-        "wgms_record_id": 74383,
+        #"wgms_record_id": 74383,
+        "wgms_record_id": 74446,
     },
     {
         "platform_id": "SV3-247",
-        "wgms_record_id": 74297,
+        #"wgms_record_id": 74297,
+        "wgms_record_id": 74445,
     },
 ]
 
@@ -186,7 +188,7 @@ class GliderApi(object):
                     colinfo = FIELDMAP[col]
                 except KeyError:
                     continue
-                data[colinfo["name"]] = colinfo["parser"](part)
+                data[colinfo["name"]] = colinfo["parser"](part.strip())
             yield data
 
 def _main():
