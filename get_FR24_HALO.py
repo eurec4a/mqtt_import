@@ -3,7 +3,7 @@ import time
 import json
 import requests
 
-from mqtt_import.mqtt_utils import EUREC4AMqttPublisher
+from mqtt_utils import EUREC4AMqttPublisher
 
 class NoSuchAircraftError(ValueError):
     pass
