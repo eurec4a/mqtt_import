@@ -2,6 +2,7 @@ import numpy as np
 import time
 import datetime
 import json
+import ssl
 
 def json_default(obj):
     if isinstance(obj, np.datetime64):
@@ -46,7 +47,8 @@ def get_mqtt_client(username=None, password=None):
     import paho.mqtt.client as mqtt
     import os
     client = mqtt.Client()
-    client.tls_set(ca_certs=os.path.join(os.path.dirname(__file__), "trustid-x3-root.pem.txt"))
+    client.tls_set(ca_certs=os.path.join(os.path.dirname(__file__), "trustid-x3-root.pem.txt"),
+        tls_version=ssl.PROTOCOL_TLSv1_2)
     if username is None and password is None:
         config_dir = get_config_dir()
         with open(os.path.join(config_dir, "mqtt_import.json")) as configfile:
@@ -80,3 +82,9 @@ class EUREC4AMqttPublisher(object):
                 return
             self.client.publish(topic, json.dumps(data, default=json_default), retain=retain)
             print(topic, data)
+
+    def revoke(self, topic, retain=True):
+        if self.deduplicator is not None:
+            if not self.deduplicator.is_new(topic, ""):
+                return
+            self.client.publish(topic, "", retain=retain)
